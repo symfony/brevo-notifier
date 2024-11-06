@@ -54,13 +54,24 @@ final class BrevoTransport extends AbstractTransport
         }
 
         $sender = $message->getFrom() ?: $this->sender;
+        $options = $message->getOptions()?->toArray() ?? [];
+        $body = [
+            'sender' => $sender,
+            'recipient' => $message->getPhone(),
+            'content' => $message->getSubject(),
+        ];
+        if (isset($options['webUrl'])) {
+            $body['webUrl'] = $options['webUrl'];
+        }
+        if (isset($options['type'])) {
+            $body['type'] = $options['type'];
+        }
+        if (isset($options['tag'])) {
+            $body['tag'] = $options['tag'];
+        }
 
         $response = $this->client->request('POST', 'https://'.$this->getEndpoint().'/v3/transactionalSMS/sms', [
-            'json' => [
-                'sender' => $sender,
-                'recipient' => $message->getPhone(),
-                'content' => $message->getSubject(),
-            ],
+            'json' => $body,
             'headers' => [
                 'api-key' => $this->apiKey,
             ],
