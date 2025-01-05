@@ -13,6 +13,7 @@ namespace Symfony\Component\Notifier\Bridge\Brevo;
 
 use Symfony\Component\Notifier\Exception\TransportException;
 use Symfony\Component\Notifier\Exception\UnsupportedMessageTypeException;
+use Symfony\Component\Notifier\Exception\UnsupportedOptionsException;
 use Symfony\Component\Notifier\Message\MessageInterface;
 use Symfony\Component\Notifier\Message\SentMessage;
 use Symfony\Component\Notifier\Message\SmsMessage;
@@ -54,7 +55,13 @@ final class BrevoTransport extends AbstractTransport
         }
 
         $sender = $message->getFrom() ?: $this->sender;
-        $options = $message->getOptions()?->toArray() ?? [];
+
+        if (($options = $message->getOptions()) && !$options instanceof BrevoOptions) {
+            throw new UnsupportedOptionsException(__CLASS__, BrevoOptions::class, $options);
+        }
+
+        $options = $options?->toArray() ?? [];
+
         $body = [
             'sender' => $sender,
             'recipient' => $message->getPhone(),

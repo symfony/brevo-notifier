@@ -43,13 +43,16 @@ final class BrevoOptions implements MessageOptionsInterface
     /**
      * @return $this
      */
-    public function type(string $type="transactional"): static
+    public function type(string $type = 'transactional'): static
     {
         $this->options['type'] = $type;
 
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function tag(string $tag): static
     {
         $this->options['tag'] = $tag;
